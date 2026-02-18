@@ -154,7 +154,7 @@
   "outputs": {
     "logsIngestionUri": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName')), '2022-06-01').logsIngestion.endpoint]"
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName')), '2022-06-01').logsIngestion]"
     },
     "dcrImmutableId": {
       "type": "string",
