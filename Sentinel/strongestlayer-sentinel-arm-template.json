@@ -1,0 +1,189 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing Log Analytics workspace where Sentinel is enabled."
+      }
+    },
+    "workspaceResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Full resource ID of the existing Log Analytics workspace."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure region (must match workspace region)."
+      }
+    }
+  },
+  "variables": {
+    "suffix": "[toLower(uniqueString(resourceGroup().id, parameters('workspaceName')))]",
+    "dceName": "[concat('dce-strongestlayer-', variables('suffix'))]",
+    "dcrName": "[concat('dcr-strongestlayer-', variables('suffix'))]",
+    "tableName": "StrongestLayer_Threats_CL",
+    "streamName": "Custom-StrongestLayer_Threats_CL",
+    "logAnalyticsDestName": "laDest"
+  },
+  "resources": [
+
+    {
+      "type": "Microsoft.Insights/dataCollectionEndpoints",
+      "apiVersion": "2022-06-01",
+      "name": "[variables('dceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "networkAcls": {
+          "publicNetworkAccess": "Enabled"
+        }
+      }
+    },
+
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/tables",
+      "apiVersion": "2022-10-01",
+      "name": "[concat(parameters('workspaceName'), '/', variables('tableName'))]",
+      "properties": {
+        "retentionInDays": 30,
+        "totalRetentionInDays": 30,
+        "schema": {
+          "name": "[variables('tableName')]",
+          "columns": [
+            { "name": "TimeGenerated", "type": "datetime" },
+
+            { "name": "EventId", "type": "string" },
+            { "name": "CompanyId", "type": "string" },
+            { "name": "CustomerId", "type": "string" },
+
+            { "name": "ThreatVerdict", "type": "string" },
+            { "name": "ThreatScore", "type": "real" },
+            { "name": "ThreatType", "type": "string" },
+            { "name": "ConfidenceScore", "type": "real" },
+            { "name": "DetectionGap", "type": "boolean" },
+            { "name": "ActionTaken", "type": "string" },
+
+            { "name": "SenderAddress", "type": "string" },
+            { "name": "RecipientAddress", "type": "string" },
+            { "name": "Subject", "type": "string" },
+
+            { "name": "IntentScore", "type": "real" },
+            { "name": "DeceptionScore", "type": "real" },
+            { "name": "AnomalyScore", "type": "real" },
+            { "name": "HarmScore", "type": "real" },
+
+            { "name": "IntentSummary", "type": "string" },
+            { "name": "DeceptionSummary", "type": "string" },
+            { "name": "AnomalySummary", "type": "string" },
+            { "name": "HarmSummary", "type": "string" },
+
+            { "name": "IOCUrls", "type": "string" },
+            { "name": "IOCDomains", "type": "string" },
+            { "name": "IOCFileHashes", "type": "string" },
+
+            { "name": "SPFResult", "type": "string" },
+            { "name": "DKIMResult", "type": "string" },
+            { "name": "DMARCResult", "type": "string" },
+
+            { "name": "Tags", "type": "string" }
+          ]
+        }
+      }
+    },
+
+    {
+      "type": "Microsoft.Insights/dataCollectionRules",
+      "apiVersion": "2022-06-01",
+      "name": "[variables('dcrName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName'))]"
+      ],
+      "properties": {
+        "dataCollectionEndpointId": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName'))]",
+
+        "streamDeclarations": {
+          "Custom-StrongestLayer_Threats_CL": {
+            "columns": [
+              { "name": "TimeGenerated", "type": "datetime" },
+
+              { "name": "EventId", "type": "string" },
+              { "name": "CompanyId", "type": "string" },
+              { "name": "CustomerId", "type": "string" },
+
+              { "name": "ThreatVerdict", "type": "string" },
+              { "name": "ThreatScore", "type": "real" },
+              { "name": "ThreatType", "type": "string" },
+              { "name": "ConfidenceScore", "type": "real" },
+              { "name": "DetectionGap", "type": "boolean" },
+              { "name": "ActionTaken", "type": "string" },
+
+              { "name": "SenderAddress", "type": "string" },
+              { "name": "RecipientAddress", "type": "string" },
+              { "name": "Subject", "type": "string" },
+
+              { "name": "IntentScore", "type": "real" },
+              { "name": "DeceptionScore", "type": "real" },
+              { "name": "AnomalyScore", "type": "real" },
+              { "name": "HarmScore", "type": "real" },
+
+              { "name": "IntentSummary", "type": "string" },
+              { "name": "DeceptionSummary", "type": "string" },
+              { "name": "AnomalySummary", "type": "string" },
+              { "name": "HarmSummary", "type": "string" },
+
+              { "name": "IOCUrls", "type": "string" },
+              { "name": "IOCDomains", "type": "string" },
+              { "name": "IOCFileHashes", "type": "string" },
+
+              { "name": "SPFResult", "type": "string" },
+              { "name": "DKIMResult", "type": "string" },
+              { "name": "DMARCResult", "type": "string" },
+
+              { "name": "Tags", "type": "string" }
+            ]
+          }
+        },
+
+        "destinations": {
+          "logAnalytics": [
+            {
+              "name": "[variables('logAnalyticsDestName')]",
+              "workspaceResourceId": "[parameters('workspaceResourceId')]"
+            }
+          ]
+        },
+
+        "dataFlows": [
+          {
+            "streams": [
+              "[variables('streamName')]"
+            ],
+            "destinations": [
+              "[variables('logAnalyticsDestName')]"
+            ],
+            "transformKql": "source"
+          }
+        ]
+      }
+    }
+  ],
+
+  "outputs": {
+    "logsIngestionUri": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName'))).properties.logsIngestion.endpoint]"
+    },
+    "dcrImmutableId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionRules', variables('dcrName')), '2022-06-01', 'Full').properties.immutableId]"
+    },
+    "streamName": {
+      "type": "string",
+      "value": "[variables('streamName')]"
+    }
+  }
+}
