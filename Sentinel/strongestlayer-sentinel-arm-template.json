@@ -30,6 +30,7 @@
     "logAnalyticsDestName": "laDest"
   },
   "resources": [
+
     {
       "type": "Microsoft.Insights/dataCollectionEndpoints",
       "apiVersion": "2022-06-01",
@@ -41,6 +42,7 @@
         }
       }
     },
+
     {
       "type": "Microsoft.OperationalInsights/workspaces/tables",
       "apiVersion": "2022-10-01",
@@ -52,82 +54,100 @@
           "name": "[variables('tableName')]",
           "columns": [
             { "name": "TimeGenerated", "type": "datetime" },
+
             { "name": "EventId", "type": "string" },
             { "name": "CompanyId", "type": "string" },
             { "name": "CustomerId", "type": "string" },
+
             { "name": "ThreatVerdict", "type": "string" },
             { "name": "ThreatScore", "type": "real" },
             { "name": "ThreatType", "type": "string" },
             { "name": "ConfidenceScore", "type": "real" },
             { "name": "DetectionGap", "type": "boolean" },
             { "name": "ActionTaken", "type": "string" },
+
             { "name": "SenderAddress", "type": "string" },
             { "name": "RecipientAddress", "type": "string" },
             { "name": "Subject", "type": "string" },
+
             { "name": "IntentScore", "type": "real" },
             { "name": "DeceptionScore", "type": "real" },
             { "name": "AnomalyScore", "type": "real" },
             { "name": "HarmScore", "type": "real" },
+
             { "name": "IntentSummary", "type": "string" },
             { "name": "DeceptionSummary", "type": "string" },
             { "name": "AnomalySummary", "type": "string" },
             { "name": "HarmSummary", "type": "string" },
+
             { "name": "IOCUrls", "type": "string" },
             { "name": "IOCDomains", "type": "string" },
             { "name": "IOCFileHashes", "type": "string" },
+
             { "name": "SPFResult", "type": "string" },
             { "name": "DKIMResult", "type": "string" },
             { "name": "DMARCResult", "type": "string" },
+
             { "name": "Tags", "type": "string" }
           ]
         }
       }
     },
+
     {
       "type": "Microsoft.Insights/dataCollectionRules",
       "apiVersion": "2022-06-01",
       "name": "[variables('dcrName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName'))]",
-        "[resourceId('Microsoft.OperationalInsights/workspaces/tables', parameters('workspaceName'), variables('tableName'))]"
+        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName'))]"
       ],
       "properties": {
         "dataCollectionEndpointId": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName'))]",
+
         "streamDeclarations": {
           "Custom-StrongestLayer_Threats_CL": {
             "columns": [
               { "name": "TimeGenerated", "type": "datetime" },
+
               { "name": "EventId", "type": "string" },
               { "name": "CompanyId", "type": "string" },
               { "name": "CustomerId", "type": "string" },
+
               { "name": "ThreatVerdict", "type": "string" },
               { "name": "ThreatScore", "type": "real" },
               { "name": "ThreatType", "type": "string" },
               { "name": "ConfidenceScore", "type": "real" },
               { "name": "DetectionGap", "type": "boolean" },
               { "name": "ActionTaken", "type": "string" },
+
               { "name": "SenderAddress", "type": "string" },
               { "name": "RecipientAddress", "type": "string" },
               { "name": "Subject", "type": "string" },
+
               { "name": "IntentScore", "type": "real" },
               { "name": "DeceptionScore", "type": "real" },
               { "name": "AnomalyScore", "type": "real" },
               { "name": "HarmScore", "type": "real" },
+
               { "name": "IntentSummary", "type": "string" },
               { "name": "DeceptionSummary", "type": "string" },
               { "name": "AnomalySummary", "type": "string" },
               { "name": "HarmSummary", "type": "string" },
+
               { "name": "IOCUrls", "type": "string" },
               { "name": "IOCDomains", "type": "string" },
               { "name": "IOCFileHashes", "type": "string" },
+
               { "name": "SPFResult", "type": "string" },
               { "name": "DKIMResult", "type": "string" },
               { "name": "DMARCResult", "type": "string" },
+
               { "name": "Tags", "type": "string" }
             ]
           }
         },
+
         "destinations": {
           "logAnalytics": [
             {
@@ -136,6 +156,7 @@
             }
           ]
         },
+
         "dataFlows": [
           {
             "streams": [
@@ -144,17 +165,17 @@
             "destinations": [
               "[variables('logAnalyticsDestName')]"
             ],
-            "transformKql": "source",
-            "outputStream": "[variables('streamName')]"
+            "transformKql": "source"
           }
         ]
       }
     }
   ],
+
   "outputs": {
     "logsIngestionUri": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName')), '2022-06-01').logsIngestion]"
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName')), '2022-06-01').logsIngestion.endpoint]"
     },
     "dcrImmutableId": {
       "type": "string",
@@ -174,3 +195,5 @@
     }
   }
 }
+
+
