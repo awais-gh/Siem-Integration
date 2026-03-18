@@ -23,11 +23,460 @@
   },
   "variables": {
     "suffix": "[toLower(uniqueString(resourceGroup().id, parameters('workspaceName')))]",
-    "dceName": "[concat('dce-strongestlayer-', variables('suffix'))]",
-    "dcrName": "[concat('dcr-strongestlayer-', variables('suffix'))]",
-    "tableName": "StrongestLayer_Threats_CL",
-    "streamName": "Custom-StrongestLayer_Threats_CL",
-    "logAnalyticsDestName": "laDest"
+    "dceName": "[concat('dce-sl-', variables('suffix'))]",
+    "dcrName": "[concat('dcr-sl-', variables('suffix'))]",
+    "tableName": "StrongestLayer_CL",
+    "streamName": "Custom-StrongestLayer_CL",
+    "logAnalyticsDestName": "laDest",
+    "workbookName": "[guid(resourceGroup().id, 'sl-workbook')]",
+    "hardcodedWorkspaceId": "/subscriptions/b8f532e0-e968-4569-b1d6-f11772ff3b68/resourcegroups/rg-strongestlayer-sentinel/providers/microsoft.operationalinsights/workspaces/la-sl-sentinel",
+    "workbookContent": {
+      "version": "Notebook/1.0",
+      "items": [
+        {
+          "type": 1,
+          "content": {
+            "json": "# \ud83d\udee1\ufe0f StrongestLayer Threat Intelligence\n### Real-time Email & Phishing Security Analytics\n#### Powered by Four-Dimensional AI Reasoning\n---\n"
+          },
+          "name": "title",
+          "id": "f381ebfd-7f9f-4c9c-9919-9dddbb783b91"
+        },
+        {
+          "type": 9,
+          "content": {
+            "version": "KqlParameterItem/1.0",
+            "parameters": [
+              {
+                "id": "TimeRange",
+                "version": "KqlParameterItem/1.0",
+                "name": "TimeRange",
+                "label": "Time Range",
+                "type": 4,
+                "isRequired": true,
+                "value": {
+                  "durationMs": 43200000
+                },
+                "typeSettings": {
+                  "selectableValues": [
+                    { "durationMs": 3600000 },
+                    { "durationMs": 14400000 },
+                    { "durationMs": 43200000 },
+                    { "durationMs": 86400000 },
+                    { "durationMs": 172800000 },
+                    { "durationMs": 604800000 },
+                    { "durationMs": 2592000000 }
+                  ]
+                }
+              }
+            ],
+            "style": "pills"
+          },
+          "name": "parameters",
+          "id": "2ad21ec2-ef3b-48a6-a0ea-bb3f8bde1fea"
+        },
+        {
+          "type": 1,
+          "content": { "json": "## \ud83d\udd25 Executive Overview\n" },
+          "name": "section_executive",
+          "id": "49e360f0-77a8-4fa5-bfbd-bab4ed9e0fa2"
+        },
+        {
+          "type": 11,
+          "content": {
+            "version": "LinkItem/1.0",
+            "style": "tabs",
+            "links": [
+              { "id": "tab1", "cellValue": "selectedTab", "linkTarget": "parameter", "linkLabel": "Overview",       "subTarget": "overview",      "style": "link" },
+              { "id": "tab2", "cellValue": "selectedTab", "linkTarget": "parameter", "linkLabel": "Detection Gap",  "subTarget": "detectiongap",  "style": "link" },
+              { "id": "tab3", "cellValue": "selectedTab", "linkTarget": "parameter", "linkLabel": "AI Analysis",    "subTarget": "ai",            "style": "link" }
+            ]
+          },
+          "name": "tabs",
+          "id": "8894fceb-580b-4bc9-9a63-5fc236b5f49b"
+        },
+        {
+          "type": 12,
+          "content": {
+            "version": "NotebookGroup/1.0",
+            "groupType": "editable",
+            "items": [
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| summarize Value=count()",
+                  "size": 3,
+                  "title": "\ud83d\udcca Total Threats",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "card",
+                  "textSettings": { "style": "bignumber" }
+                },
+                "customWidth": "25",
+                "name": "metric_total",
+                "styleSettings": { "margin": "10px", "padding": "10px", "showBorder": true },
+                "id": "1e1daa84-d2d2-48fb-85be-f8ed8ffacf03"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| where ThreatVerdict == \"Malicious\"\n| summarize Value=count()",
+                  "size": 3,
+                  "title": "\ud83d\udd34 Malicious",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "card",
+                  "textSettings": { "style": "bignumber" }
+                },
+                "customWidth": "25",
+                "name": "metric_malicious",
+                "styleSettings": { "margin": "10px", "padding": "10px", "showBorder": true },
+                "id": "7a7999df-9bae-4243-9272-32a9641cf9d6"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| where ThreatVerdict == \"suspicious\"\n| summarize Value=count()",
+                  "size": 3,
+                  "title": "\ud83d\udfe1 Suspicious",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "card",
+                  "textSettings": { "style": "bignumber" }
+                },
+                "customWidth": "25",
+                "name": "metric_suspicious",
+                "styleSettings": { "margin": "10px", "padding": "10px", "showBorder": true },
+                "id": "8e47a1b9-3273-4d20-a367-fa25efbba83b"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| summarize Value=round(avg(todouble(ConfidenceScore))*100,0)",
+                  "size": 3,
+                  "title": "\u2705 Avg Confidence",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "card",
+                  "textSettings": { "style": "bignumber" }
+                },
+                "customWidth": "25",
+                "name": "metric_confidence",
+                "styleSettings": { "margin": "10px", "padding": "10px", "showBorder": true },
+                "id": "9c9174a1-f39c-4423-975d-ec93464e8797"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| summarize Count=count() by bin(TimeGenerated, 1h)\n| order by TimeGenerated asc",
+                  "size": 0,
+                  "title": "Threat Volume Over Time",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "areachart"
+                },
+                "name": "chart_volume",
+                "id": "ab1234cd-0000-0000-0000-000000000001"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| summarize Count=count() by ThreatType\n| order by Count desc",
+                  "size": 0,
+                  "title": "Threats by Type",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "piechart"
+                },
+                "customWidth": "50",
+                "name": "chart_by_type",
+                "id": "ab1234cd-0000-0000-0000-000000000002"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| summarize Count=count() by ThreatVerdict\n| order by Count desc",
+                  "size": 0,
+                  "title": "Threats by Verdict",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "piechart"
+                },
+                "customWidth": "50",
+                "name": "chart_by_verdict",
+                "id": "ab1234cd-0000-0000-0000-000000000003"
+              }
+            ]
+          },
+          "conditionalVisibility": {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "overview"
+          },
+          "name": "group_overview",
+          "id": "group_overview_id"
+        },
+        {
+          "type": 12,
+          "content": {
+            "version": "NotebookGroup/1.0",
+            "groupType": "editable",
+            "items": [
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| where DetectionGap == true\n| summarize Count=count() by bin(TimeGenerated, 1h)\n| order by TimeGenerated asc",
+                  "size": 0,
+                  "title": "Detection Gap Events Over Time",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "barchart"
+                },
+                "name": "chart_gap_timeline",
+                "id": "ab1234cd-0000-0000-0000-000000000004"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| where DetectionGap == true\n| project TimeGenerated, Verdict=ThreatVerdict, Type=ThreatType, Sender=SenderAddress, Recipient=RecipientAddress, Subject, Score=strcat(round(todouble(ConfidenceScore)*100,1),\"%\")\n| sort by TimeGenerated desc\n| take 50",
+                  "size": 0,
+                  "title": "Detection Gap Events",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "table",
+                  "gridSettings": { "filter": true }
+                },
+                "name": "table_gap_events",
+                "id": "ab1234cd-0000-0000-0000-000000000005"
+              }
+            ]
+          },
+          "conditionalVisibility": {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "detectiongap"
+          },
+          "name": "group_detectiongap",
+          "id": "group_detectiongap_id"
+        },
+        {
+          "type": 12,
+          "content": {
+            "version": "NotebookGroup/1.0",
+            "groupType": "editable",
+            "items": [
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| summarize\n    AvgIntent=round(avg(todouble(IntentScore))*100,1),\n    AvgDeception=round(avg(todouble(DeceptionScore))*100,1),\n    AvgAnomaly=round(avg(todouble(AnomalyScore))*100,1),\n    AvgHarm=round(avg(todouble(HarmScore))*100,1)",
+                  "size": 3,
+                  "title": "Average AI Reasoning Scores (%)",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "table"
+                },
+                "name": "table_ai_scores",
+                "id": "ab1234cd-0000-0000-0000-000000000006"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| where isnotempty(IntentSummary)\n| project TimeGenerated, Verdict=ThreatVerdict, Subject, IntentSummary, DeceptionSummary, AnomalySummary, HarmSummary, ReasoningSummary\n| sort by TimeGenerated desc\n| take 25",
+                  "size": 0,
+                  "title": "AI Reasoning Summaries",
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "visualization": "table",
+                  "gridSettings": { "filter": true }
+                },
+                "name": "table_ai_summaries",
+                "id": "ab1234cd-0000-0000-0000-000000000007"
+              }
+            ]
+          },
+          "conditionalVisibility": {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "ai"
+          },
+          "name": "group_ai",
+          "id": "group_ai_id"
+        },
+        {
+          "type": 1,
+          "content": { "json": "## \ud83d\udd10 Email Authentication\n" },
+          "name": "section_email_auth",
+          "id": "3d8f16b9-43ab-4206-a080-d4327884ccfa-header"
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| summarize\n    SPFPass=countif(SPFResult==\"pass\"),\n    SPFFail=countif(SPFResult==\"fail\"),\n    DKIMPass=countif(DKIMResult==\"pass\"),\n    DKIMFail=countif(DKIMResult==\"fail\"),\n    DMARCPass=countif(DMARCResult==\"pass\"),\n    DMARCFail=countif(DMARCResult==\"fail\")",
+            "size": 3,
+            "title": "Authentication Results Summary",
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "visualization": "table"
+          },
+          "customWidth": "50",
+          "name": "table_auth_summary",
+          "id": "ab1234cd-0000-0000-0000-000000000008"
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| extend AuthStatus = case(\n    SPFResult==\"fail\" or DKIMResult==\"fail\" or DMARCResult==\"fail\", \"Auth Failure\",\n    \"Auth Pass\"\n  )\n| summarize Count=count() by AuthStatus",
+            "size": 0,
+            "title": "Authentication Failure Patterns",
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "visualization": "piechart"
+          },
+          "customWidth": "50",
+          "name": "chart_auth_patterns",
+          "id": "9f9174a1-f39c-4423-975d-ec93464e8797"
+        },
+        {
+          "type": 1,
+          "content": { "json": "## \u26a1 Actions Taken\n" },
+          "name": "section_actions",
+          "id": "69ce5d07-01c3-4768-aa9e-b3051acc1661"
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| summarize Count=count() by ActionTaken\n| order by Count desc",
+            "size": 0,
+            "title": "Distribution of Actions",
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "visualization": "piechart"
+          },
+          "name": "chart_actions",
+          "id": "4ae5281d-1e88-4229-8734-165cdc815a25"
+        },
+        {
+          "type": 1,
+          "content": { "json": "## \u26a0\ufe0f High-Risk Threats\n### Confidence Score > 90%\n" },
+          "name": "section_high_risk",
+          "id": "6ab29c74-1150-4000-af63-d9b8c861114e"
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| where todouble(ConfidenceScore) > 0.9\n| project TimeGenerated, Verdict=ThreatVerdict, Type=ThreatType, Sender=SenderAddress, Recipient=RecipientAddress, Subject, Confidence=strcat(round(todouble(ConfidenceScore)*100,1),\"%\"), Intent=strcat(round(todouble(IntentScore)*100,1),\"%\"), Deception=strcat(round(todouble(DeceptionScore)*100,1),\"%\")\n| sort by TimeGenerated desc\n| take 25",
+            "size": 0,
+            "title": "Critical Threats (Confidence > 90%)",
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "visualization": "table",
+            "gridSettings": {
+              "formatters": [
+                {
+                  "columnMatch": "Verdict",
+                  "formatter": 18,
+                  "formatOptions": {
+                    "thresholdsOptions": "icons",
+                    "thresholdsGrid": [
+                      { "operator": "==", "thresholdValue": "Malicious",  "representation": "4",       "text": "{0}{1}" },
+                      { "operator": "==", "thresholdValue": "Suspicious", "representation": "2",       "text": "{0}{1}" },
+                      { "operator": "Default",                            "representation": "success", "text": "{0}{1}" }
+                    ]
+                  }
+                },
+                { "columnMatch": "Confidence", "formatter": 8, "formatOptions": { "palette": "redGreen" } },
+                { "columnMatch": "Intent",      "formatter": 8, "formatOptions": { "palette": "redGreen" } },
+                { "columnMatch": "Deception",   "formatter": 8, "formatOptions": { "palette": "redGreen" } }
+              ]
+            }
+          },
+          "name": "table_high_risk",
+          "id": "72985f73-e36b-4765-b28e-831ca5023c7b"
+        },
+        {
+          "type": 1,
+          "content": { "json": "## \ud83d\udccb Recent Threat Events\n" },
+          "name": "section_recent",
+          "id": "e32182e7-c9c0-4e9b-9224-7ef47e0fb8c4"
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "StrongestLayer_CL\n| where TimeGenerated {TimeRange}\n| project Time=TimeGenerated, EventID=EventId, Verdict=ThreatVerdict, Type=ThreatType, Sender=SenderAddress, Recipient=RecipientAddress, Subject, Score=strcat(round(todouble(ConfidenceScore)*100,1),\"%\"), Action=ActionTaken, Gap=DetectionGap\n| sort by Time desc\n| take 50",
+            "size": 0,
+            "title": "Latest 50 Events",
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "visualization": "table",
+            "gridSettings": {
+              "formatters": [
+                {
+                  "columnMatch": "Verdict",
+                  "formatter": 18,
+                  "formatOptions": {
+                    "thresholdsOptions": "colors",
+                    "thresholdsGrid": [
+                      { "operator": "==", "thresholdValue": "Malicious",  "representation": "redBright", "text": "{0}{1}" },
+                      { "operator": "==", "thresholdValue": "Suspicious", "representation": "orange",    "text": "{0}{1}" },
+                      { "operator": "Default",                            "representation": "green",     "text": "{0}{1}" }
+                    ]
+                  }
+                },
+                {
+                  "columnMatch": "Gap",
+                  "formatter": 18,
+                  "formatOptions": {
+                    "thresholdsOptions": "icons",
+                    "thresholdsGrid": [
+                      { "operator": "==", "thresholdValue": "true", "representation": "2",       "text": "Yes" },
+                      { "operator": "Default",                      "representation": "success", "text": "No"  }
+                    ]
+                  }
+                }
+              ],
+              "filter": true
+            }
+          },
+          "name": "table_recent_events",
+          "id": "8d0f3422-e39b-4f18-ba54-9973704e5573"
+        }
+      ],
+      "fallbackResourceIds": [
+        "WORKSPACE_RESOURCE_ID_PLACEHOLDER"
+      ],
+      "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+    }
   },
   "resources": [
     {
@@ -51,35 +500,35 @@
         "schema": {
           "name": "[variables('tableName')]",
           "columns": [
-            { "name": "TimeGenerated", "type": "datetime" },
-            { "name": "EventId", "type": "string" },
-            { "name": "CompanyId", "type": "string" },
-            { "name": "CustomerId", "type": "string" },
-            { "name": "ThreatVerdict", "type": "string" },
-            { "name": "ThreatScore", "type": "real" },
-            { "name": "ThreatType", "type": "string" },
-            { "name": "ConfidenceScore", "type": "real" },
-            { "name": "DetectionGap", "type": "boolean" },
-            { "name": "ActionTaken", "type": "string" },
-            { "name": "SenderAddress", "type": "string" },
-            { "name": "RecipientAddress", "type": "string" },
-            { "name": "Subject", "type": "string" },
-            { "name": "IntentScore", "type": "real" },
-            { "name": "DeceptionScore", "type": "real" },
-            { "name": "AnomalyScore", "type": "real" },
-            { "name": "HarmScore", "type": "real" },
-            { "name": "IntentSummary", "type": "string" },
-            { "name": "DeceptionSummary", "type": "string" },
-            { "name": "AnomalySummary", "type": "string" },
-            { "name": "ReasoningSummary","type": "string"},
-            { "name": "HarmSummary", "type": "string" },
-            { "name": "IOCUrls", "type": "string" },
-            { "name": "IOCDomains", "type": "string" },
-            { "name": "IOCFileHashes", "type": "string" },
-            { "name": "SPFResult", "type": "string" },
-            { "name": "DKIMResult", "type": "string" },
-            { "name": "DMARCResult", "type": "string" },
-            { "name": "Tags", "type": "string" }
+            { "name": "TimeGenerated",    "type": "datetime" },
+            { "name": "EventId",          "type": "string"   },
+            { "name": "CompanyId",        "type": "string"   },
+            { "name": "CustomerId",       "type": "string"   },
+            { "name": "ThreatVerdict",    "type": "string"   },
+            { "name": "ThreatScore",      "type": "real"     },
+            { "name": "ThreatType",       "type": "string"   },
+            { "name": "ConfidenceScore",  "type": "real"     },
+            { "name": "DetectionGap",     "type": "boolean"  },
+            { "name": "ActionTaken",      "type": "string"   },
+            { "name": "SenderAddress",    "type": "string"   },
+            { "name": "RecipientAddress", "type": "string"   },
+            { "name": "Subject",          "type": "string"   },
+            { "name": "IntentScore",      "type": "real"     },
+            { "name": "DeceptionScore",   "type": "real"     },
+            { "name": "AnomalyScore",     "type": "real"     },
+            { "name": "HarmScore",        "type": "real"     },
+            { "name": "IntentSummary",    "type": "string"   },
+            { "name": "DeceptionSummary", "type": "string"   },
+            { "name": "AnomalySummary",   "type": "string"   },
+            { "name": "ReasoningSummary", "type": "string"   },
+            { "name": "HarmSummary",      "type": "string"   },
+            { "name": "IOCUrls",          "type": "string"   },
+            { "name": "IOCDomains",       "type": "string"   },
+            { "name": "IOCFileHashes",    "type": "string"   },
+            { "name": "SPFResult",        "type": "string"   },
+            { "name": "DKIMResult",       "type": "string"   },
+            { "name": "DMARCResult",      "type": "string"   },
+            { "name": "Tags",             "type": "string"   }
           ]
         }
       }
@@ -96,37 +545,37 @@
       "properties": {
         "dataCollectionEndpointId": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', variables('dceName'))]",
         "streamDeclarations": {
-          "Custom-StrongestLayer_Threats_CL": {
+          "Custom-StrongestLayer_CL": {
             "columns": [
-              { "name": "TimeGenerated", "type": "datetime" },
-              { "name": "EventId", "type": "string" },
-              { "name": "CompanyId", "type": "string" },
-              { "name": "CustomerId", "type": "string" },
-              { "name": "ThreatVerdict", "type": "string" },
-              { "name": "ThreatScore", "type": "real" },
-              { "name": "ThreatType", "type": "string" },
-              { "name": "ConfidenceScore", "type": "real" },
-              { "name": "DetectionGap", "type": "boolean" },
-              { "name": "ActionTaken", "type": "string" },
-              { "name": "SenderAddress", "type": "string" },
-              { "name": "RecipientAddress", "type": "string" },
-              { "name": "Subject", "type": "string" },
-              { "name": "IntentScore", "type": "real" },
-              { "name": "DeceptionScore", "type": "real" },
-              { "name": "AnomalyScore", "type": "real" },
-              { "name": "HarmScore", "type": "real" },
-              { "name": "IntentSummary", "type": "string" },
-              { "name": "DeceptionSummary", "type": "string" },
-              { "name": "AnomalySummary", "type": "string" },
-              { "name": "ReasoningSummary","type": "string"},
-              { "name": "HarmSummary", "type": "string" },
-              { "name": "IOCUrls", "type": "string" },
-              { "name": "IOCDomains", "type": "string" },
-              { "name": "IOCFileHashes", "type": "string" },
-              { "name": "SPFResult", "type": "string" },
-              { "name": "DKIMResult", "type": "string" },
-              { "name": "DMARCResult", "type": "string" },
-              { "name": "Tags", "type": "string" }
+              { "name": "TimeGenerated",    "type": "datetime" },
+              { "name": "EventId",          "type": "string"   },
+              { "name": "CompanyId",        "type": "string"   },
+              { "name": "CustomerId",       "type": "string"   },
+              { "name": "ThreatVerdict",    "type": "string"   },
+              { "name": "ThreatScore",      "type": "real"     },
+              { "name": "ThreatType",       "type": "string"   },
+              { "name": "ConfidenceScore",  "type": "real"     },
+              { "name": "DetectionGap",     "type": "boolean"  },
+              { "name": "ActionTaken",      "type": "string"   },
+              { "name": "SenderAddress",    "type": "string"   },
+              { "name": "RecipientAddress", "type": "string"   },
+              { "name": "Subject",          "type": "string"   },
+              { "name": "IntentScore",      "type": "real"     },
+              { "name": "DeceptionScore",   "type": "real"     },
+              { "name": "AnomalyScore",     "type": "real"     },
+              { "name": "HarmScore",        "type": "real"     },
+              { "name": "IntentSummary",    "type": "string"   },
+              { "name": "DeceptionSummary", "type": "string"   },
+              { "name": "AnomalySummary",   "type": "string"   },
+              { "name": "ReasoningSummary", "type": "string"   },
+              { "name": "HarmSummary",      "type": "string"   },
+              { "name": "IOCUrls",          "type": "string"   },
+              { "name": "IOCDomains",       "type": "string"   },
+              { "name": "IOCFileHashes",    "type": "string"   },
+              { "name": "SPFResult",        "type": "string"   },
+              { "name": "DKIMResult",       "type": "string"   },
+              { "name": "DMARCResult",      "type": "string"   },
+              { "name": "Tags",             "type": "string"   }
             ]
           }
         },
@@ -140,15 +589,28 @@
         },
         "dataFlows": [
           {
-            "streams": [
-              "[variables('streamName')]"
-            ],
-            "destinations": [
-              "[variables('logAnalyticsDestName')]"
-            ],
+            "streams": [ "[variables('streamName')]" ],
+            "destinations": [ "[variables('logAnalyticsDestName')]" ],
             "transformKql": "source"
           }
         ]
+      }
+    },
+    {
+      "type": "microsoft.insights/workbooks",
+      "apiVersion": "2022-04-01",
+      "name": "[variables('workbookName')]",
+      "location": "[parameters('location')]",
+      "kind": "shared",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces/tables', parameters('workspaceName'), variables('tableName'))]"
+      ],
+      "properties": {
+        "displayName": "StrongestLayer - Email Threat Intelligence",
+        "serializedData": "[replace(string(variables('workbookContent')), 'WORKSPACE_RESOURCE_ID_PLACEHOLDER', parameters('workspaceResourceId'))]",
+        "version": "1.0",
+        "sourceId": "[parameters('workspaceResourceId')]",
+        "category": "sentinel"
       }
     }
   ],
@@ -172,6 +634,10 @@
     "dcrName": {
       "type": "string",
       "value": "[variables('dcrName')]"
+    },
+    "workbookName": {
+      "type": "string",
+      "value": "[variables('workbookName')]"
     }
   }
 }
