@@ -23,13 +23,12 @@
   },
   "variables": {
     "suffix": "[toLower(uniqueString(resourceGroup().id, parameters('workspaceName')))]",
-    "dceName": "[concat('dce-sl-', variables('suffix'))]",
-    "dcrName": "[concat('dcr-sl-', variables('suffix'))]",
+    "dceName": "[concat('dce-strongestlayer-', variables('suffix'))]",
+    "dcrName": "[concat('dcr-strongestlayer-', variables('suffix'))]",
     "tableName": "StrongestLayer_CL",
     "streamName": "Custom-StrongestLayer_CL",
     "logAnalyticsDestName": "laDest",
-    "workbookName": "[guid(resourceGroup().id, 'sl-workbook')]",
-    "hardcodedWorkspaceId": "/subscriptions/b8f532e0-e968-4569-b1d6-f11772ff3b68/resourcegroups/rg-strongestlayer-sentinel/providers/microsoft.operationalinsights/workspaces/la-sl-sentinel",
+    "workbookName": "[guid(resourceGroup().id, 'strongestlayer')]",
     "workbookContent": {
       "version": "Notebook/1.0",
       "items": [
